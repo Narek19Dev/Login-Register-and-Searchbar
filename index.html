@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://kit.fontawesome.com/92d70a2fd8.js" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Mini Shop</title>
+</head>
+
+<body>
+
+    <main class="app-header">
+        <div class="sidebody" style="height: 10rem;">
+            <form class="search-container">
+                <input class="search-input" placeholder="Search..." id="searchBar" name="searchBar" type="text">
+                <button class="search-button">Search</button>
+            </form>
+        </div>
+        <div class="data">
+            <div class="body">
+                <div id="root">
+
+                </div>
+            </div>
+        </div>
+        <div id="loader-overlay">
+            <div class="loader"></div>
+        </div>
+
+    </main>
+    <script>
+        window.addEventListener("load", function () {
+            const loader = document.getElementById("loader-overlay");
+            const content = document.getElementById("content");
+
+            const MIN_TIME = 800;
+            const start = Date.now();
+
+            function hideLoader() {
+                const elapsed = Date.now() - start;
+                const remaining = Math.max(0, MIN_TIME - elapsed);
+
+                setTimeout(() => {
+                    loader.classList.add("hidden");
+                    setTimeout(() => {
+                        loader.style.display = "none";
+                    }, 500);
+                }, remaining);
+            }
+
+            hideLoader();
+        });
+        document.addEventListener("keydown", function (event) {
+            if (event.key.toLowerCase() === "r") {
+                location.reload();
+            }
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            const content = document.getElementById("content");
+            if (content) {
+                content.style.display = "block";
+            }
+        });
+
+    </script>
+    <script src="app.js"></script>
+</body>
+
+</html>
