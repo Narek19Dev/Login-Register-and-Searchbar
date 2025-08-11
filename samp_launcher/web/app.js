@@ -6,14 +6,27 @@ function setStatus(text, isError = false) {
   el.style.color = isError ? '#ff9898' : '#9acbff';
 }
 
+let progressTimer = null;
+
+function pollProgress()() {
+  try {
+    const res = window.pyBridge.get_progress();
+    if (res && typeof res.progress === 'number') {
+      const pct = Math.max(0, Math.min(100, res.progress|0));
+      $('#progressBar').style.width = pct + '%';
+    }
+    if (res && res.status) setStatus(res.status);
+  } catch {}
+}
+
 function loadConfig() {
   try {
     const cfg = window.pyBridge ? window.pyBridge.get_config() : null;
     if (!cfg) return;
-    $('#server').value = cfg.server_ip_port || '';
     $('#nickname').value = cfg.nickname || '';
-    $('#password').value = cfg.password || '';
-    $('#skinUrl').value = cfg.skin_download_url || '';
+    $('#sborkaUrl').value = cfg.sborka_url || '';
+    $('#winePath').value = cfg.wine_path || '';
+    $('#sampRel').value = cfg.samp_relative_path || 'samp.exe';
   } catch (e) {
     setStatus('Failed to load config: ' + e.message, true);
   }
@@ -21,10 +34,10 @@ function loadConfig() {
 
 function saveConfig() {
   const config = {
-    server_ip_port: $('#server').value.trim(),
     nickname: $('#nickname').value.trim(),
-    password: $('#password').value,
-    skin_download_url: $('#skinUrl').value.trim(),
+    sborka_url: $('#sborkaUrl').value.trim(),
+    wine_path: $('#winePath').value.trim(),
+    samp_relative_path: $('#sampRel').value.trim() || 'samp.exe',
   };
   try {
     const res = window.pyBridge.save_config(JSON.stringify(config));
@@ -35,16 +48,13 @@ function saveConfig() {
   }
 }
 
-function downloadSkin() {
-  const nick = $('#nickname').value.trim();
-  if (!nick) return setStatus('Enter nickname to download skin', true);
+function downloadSborka() {
   try {
-    const res = window.pyBridge.download_skin(nick);
+    const res = window.pyBridge.download_sborka();
     if (res && res.ok) {
-      const img = $('#skinImg');
-      img.src = res.path;
-      $('#skinPreview').classList.remove('hidden');
-      setStatus('Skin downloaded');
+      setStatus('Starting download…');
+      if (progressTimer) clearInterval(progressTimer);
+      progressTimer = setInterval(pollProgress, 500);
     } else {
       setStatus('Download failed: ' + (res && res.error ? res.error : 'Unknown error'), true);
     }
@@ -53,24 +63,22 @@ function downloadSkin() {
   }
 }
 
-function connect() {
-  const server = $('#server').value.trim();
+function launch() {
   const nick = $('#nickname').value.trim();
-  const pass = $('#password').value;
-  if (!server) return setStatus('Enter server ip:port', true);
   if (!nick) return setStatus('Enter nickname', true);
   try {
-    const res = window.pyBridge.connect(server, nick, pass);
-    if (res && res.ok) setStatus('Opening SA:MP…');
-    else setStatus('Connect failed: ' + (res && res.error ? res.error : 'Unknown error'), true);
+    const res = window.pyBridge.launch(nick);
+    if (res && res.ok) setStatus('Launching…');
+    else setStatus('Launch failed: ' + (res && res.error ? res.error : 'Unknown error'), true);
   } catch (e) {
-    setStatus('Connect failed: ' + e.message, true);
+    setStatus('Launch failed: ' + e.message, true);
   }
 }
 
 window.addEventListener('DOMContentLoaded', () => {
   $('#save').addEventListener('click', saveConfig);
-  $('#downloadSkin').addEventListener('click', downloadSkin);
-  $('#connect').addEventListener('click', connect);
+  $('#download').addEventListener('click', downloadSborka);
+  $('#launch').addEventListener('click', launch);
   loadConfig();
+  pollProgress();
 });

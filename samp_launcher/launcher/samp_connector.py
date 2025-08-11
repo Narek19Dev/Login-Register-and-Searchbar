@@ -41,6 +41,14 @@ def _try_wine_launch(wine_path: str, samp_exe_path: str, server_ip_port: str) ->
         return False
 
 
+def run_samp_exe_with_wine(samp_exe_path: str, server_ip_port: str, wine_path: Optional[str]) -> None:
+    wine = wine_path or shutil.which("wine") or "/usr/bin/wine"
+    if not os.path.exists(samp_exe_path):
+        raise FileNotFoundError(f"samp.exe not found: {samp_exe_path}")
+    cmd = [wine, samp_exe_path, server_ip_port]
+    subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
 def connect_via_samp_url_or_wine(
     server_ip_port: str,
     nickname: str,

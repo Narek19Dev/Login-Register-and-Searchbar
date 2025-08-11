@@ -11,37 +11,35 @@
     <h1>SA:MP Launcher</h1>
 
     <div class="form-row">
-      <label>Server (ip:port)</label>
-      <input id="server" type="text" placeholder="127.0.0.1:7777" />
-    </div>
-
-    <div class="form-row">
       <label>Nickname</label>
       <input id="nickname" type="text" placeholder="Player" />
     </div>
 
     <div class="form-row">
-      <label>Password (optional)</label>
-      <input id="password" type="password" placeholder="" />
+      <label>Sborka URL (.zip/.7z/.rar)</label>
+      <input id="sborkaUrl" type="text" placeholder="https://example.com/your-sborka.zip" />
     </div>
 
     <div class="form-row">
-      <label>Skin URL Template</label>
-      <input id="skinUrl" type="text" placeholder="https://example.com/skins/{nickname}.png" />
+      <label>Wine path (Linux)</label>
+      <input id="winePath" type="text" placeholder="/usr/bin/wine" />
+    </div>
+
+    <div class="form-row">
+      <label>Relative path to samp.exe in sborka</label>
+      <input id="sampRel" type="text" placeholder="samp.exe" />
     </div>
 
     <div class="btn-row">
       <button id="save">Save</button>
-      <button id="downloadSkin">Download Skin</button>
-      <button id="connect">Connect</button>
+      <button id="download">Download Sborka</button>
+      <button id="launch">Launch</button>
     </div>
 
+    <div class="progress">
+      <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+    </div>
     <div id="status" class="status"></div>
-
-    <div id="skinPreview" class="skin-preview hidden">
-      <h3>Skin Preview</h3>
-      <img id="skinImg" alt="Skin Preview" />
-    </div>
   </div>
 
   <script src="app.js"></script>
